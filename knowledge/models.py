@@ -27,8 +27,14 @@ class Category(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
 
-    def __unicode__(self):
+    def to_repr(self):
         return self.title
+
+    def __unicode__(self):
+        return self.to_repr()
+
+    def __str__(self):
+        return self.to_repr()
 
     class Meta:
         ordering = ['title']
@@ -172,8 +178,14 @@ class Question(KnowledgeBase):
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')
 
-    def __unicode__(self):
+    def to_repr(self):
         return self.title
+
+    def __unicode__(self):
+        return self.to_repr()
+
+    def __str__(self):
+        return self.to_repr()
 
     @models.permalink
     def get_absolute_url(self):
@@ -275,8 +287,14 @@ class Response(KnowledgeBase):
         verbose_name = _('Response')
         verbose_name_plural = _('Responses')
 
-    def __unicode__(self):
+    def to_repr(self):
         return self.body[0:100] + '...'
+
+    def __unicode__(self):
+        return self.to_repr()
+
+    def __str__(self):
+        return self.to_repr()
 
     def states(self):
         """
