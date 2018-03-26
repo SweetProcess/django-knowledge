@@ -2,8 +2,8 @@ from . import settings
 
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models import Q
+from django.urls import reverse, NoReverseMatch
 
 from knowledge.models import Question, Response, Category
 from knowledge.forms import QuestionForm, ResponseForm
