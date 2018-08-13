@@ -9,8 +9,7 @@ from knowledge import settings
 
 class BasicSignalTest(TestCase):
     def setUp(self):
-        self.assertFalse(settings.ALERTS)
-        settings.ALERTS = not settings.ALERTS
+        settings.ALERTS = True
 
         self.admin = User.objects.create_superuser('admin', 'admin@example.com', 'secret')
         self.joe = User.objects.create_user('joe', 'joedirt@example.com', 'secret')
@@ -40,9 +39,8 @@ class BasicSignalTest(TestCase):
 
 
     def tearDown(self):
-        self.assertTrue(settings.ALERTS)
         mail.outbox = []
-        settings.ALERTS = not settings.ALERTS
+        settings.ALERTS = False
         super(BasicSignalTest, self).tearDown()
 
 

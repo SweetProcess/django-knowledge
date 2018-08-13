@@ -1,9 +1,9 @@
 from .test_base import TestCase
 
-from django.test.client import Client
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.test.client import Client
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 
 from knowledge import settings
 from knowledge.models import Question, Response
