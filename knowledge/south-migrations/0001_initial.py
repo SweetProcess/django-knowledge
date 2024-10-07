@@ -37,8 +37,8 @@ class Migration(SchemaMigration):
         # Adding M2M table for field categories on 'Question'
         db.create_table('knowledge_question_categories', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('question', models.ForeignKey(orm['knowledge.question'], null=False)),
-            ('category', models.ForeignKey(orm['knowledge.category'], null=False))
+            ('question', models.ForeignKey(orm['knowledge.question'], on_delete=models.CASCADE, null=False)),
+            ('category', models.ForeignKey(orm['knowledge.category'], on_delete=models.CASCADE, null=False))
         ))
         db.create_unique('knowledge_question_categories', ['question_id', 'category_id'])
 
