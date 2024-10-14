@@ -16,7 +16,6 @@ class BasicMangerTest(TestCase):
         self.assertEqual(1, Q.can_view(self.joe).count())
         self.assertEqual(1, Q.can_view(self.admin).count())
 
-
         ## someone comes along and publicizes this question ##
         self.question.public()
 
@@ -25,7 +24,6 @@ class BasicMangerTest(TestCase):
         self.assertEqual(1, Q.can_view(self.bob).count())
         self.assertEqual(1, Q.can_view(self.joe).count())
         self.assertEqual(1, Q.can_view(self.admin).count())
-
 
         ## someone comes along and privatizes this question ##
         self.question.private()
@@ -37,14 +35,13 @@ class BasicMangerTest(TestCase):
         self.assertEqual(1, Q.can_view(self.admin).count())
 
     def test_generic_response_qs(self):
-        # the auto generated response tests are inherit 
+        # the auto generated response tests are inherit
         # (private by question's status) by default
         self.assertEqual(0, R.can_view(self.anon).count())
         self.assertEqual(0, R.can_view(self.bob).count())
 
         self.assertEqual(1, R.can_view(self.joe).count())
         self.assertEqual(1, R.can_view(self.admin).count())
-
 
         ## someone comes along and publicizes this response ##
         self.response.public()
@@ -54,7 +51,6 @@ class BasicMangerTest(TestCase):
         self.assertEqual(1, R.can_view(self.bob).count())
         self.assertEqual(1, R.can_view(self.joe).count())
         self.assertEqual(1, R.can_view(self.admin).count())
-
 
         ## someone comes along and internalizes this response ##
         self.response.internal()
@@ -66,10 +62,9 @@ class BasicMangerTest(TestCase):
 
         self.assertEqual(1, R.can_view(self.admin).count())
 
-
         ## someone comes along and privatizes this response ##
         self.response.private()
-        
+
         self.assertEqual(0, R.can_view(self.anon).count())
         self.assertEqual(0, R.can_view(self.bob).count())
 

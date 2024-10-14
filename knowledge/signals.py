@@ -15,30 +15,27 @@ def send_alerts(target_dict, response=None, question=None, **kwargs):
 
     for email, name in list(target_dict.items()):
         if isinstance(name, User):
-            name = '{0} {1}'.format(name.first_name, name.last_name)
+            name = "{0} {1}".format(name.first_name, name.last_name)
         else:
             name = name[0]
 
         context = {
-            'name': name,
-            'email': email,
-            'response': response,
-            'question': question,
-            'site': site
+            "name": name,
+            "email": email,
+            "response": response,
+            "question": question,
+            "site": site,
         }
 
-        subject = render_to_string(
-            'django_knowledge/emails/subject.txt', context)
+        subject = render_to_string("django_knowledge/emails/subject.txt", context)
 
-        message = render_to_string(
-            'django_knowledge/emails/message.txt', context)
+        message = render_to_string("django_knowledge/emails/message.txt", context)
 
-        message_html = render_to_string(
-            'django_knowledge/emails/message.html', context)
+        message_html = render_to_string("django_knowledge/emails/message.html", context)
 
-        subject = ' '.join(line.strip() for line in subject.splitlines()).strip()
+        subject = " ".join(line.strip() for line in subject.splitlines()).strip()
         msg = EmailMultiAlternatives(subject, message, to=[email])
-        msg.attach_alternative(message_html, 'text/html')
+        msg.attach_alternative(message_html, "text/html")
         msg.send()
 
 
@@ -60,13 +57,19 @@ def knowledge_post_save(sender, instance, created, **kwargs):
             instances += [instance.question]
 
             # dedupe people who want alerts thanks to dict keys...
-            out_dict = dict([[i.get_email(), i.get_user_or_pair()]
-                            for i in instances if i.alert])
+            out_dict = dict(
+                [[i.get_email(), i.get_user_or_pair()] for i in instances if i.alert]
+            )
 
         elif isinstance(instance, Question):
             staffers = User.objects.filter(is_staff=True)
-            out_dict = dict([[user.email, user] for user in staffers
-                                if user.has_perm('change_question')])
+            out_dict = dict(
+                [
+                    [user.email, user]
+                    for user in staffers
+                    if user.has_perm("change_question")
+                ]
+            )
 
         # remove the creator...
         if instance.get_email() in list(out_dict.keys()):
@@ -75,5 +78,5 @@ def knowledge_post_save(sender, instance, created, **kwargs):
         func(
             target_dict=out_dict,
             response=instance if isinstance(instance, Response) else None,
-            question=instance if isinstance(instance, Question) else None
+            question=instance if isinstance(instance, Question) else None,
         )

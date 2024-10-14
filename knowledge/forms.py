@@ -1,10 +1,10 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from knowledge import settings
 from knowledge.models import Question, Response
 
-OPTIONAL_FIELDS = ['alert', 'phone_number']
+OPTIONAL_FIELDS = ["alert", "phone_number"]
 
 
 __todo__ = """
@@ -24,12 +24,12 @@ def QuestionForm(user, *args, **kwargs):
         if not settings.ALLOW_ANONYMOUS:
             return None
         else:
-            selected_fields = ['name', 'email', 'title', 'body']
+            selected_fields = ["name", "email", "title", "body"]
     else:
-        selected_fields = ['user', 'title', 'body', 'status']
+        selected_fields = ["user", "title", "body", "status"]
 
     if settings.ALERTS:
-        selected_fields += ['alert']
+        selected_fields += ["alert"]
 
     class _QuestionForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
@@ -40,16 +40,16 @@ def QuestionForm(user, *args, **kwargs):
                     self.fields[key].required = True
 
             # hide the internal status for non-staff
-            qf = self.fields.get('status', None)
+            qf = self.fields.get("status", None)
             if qf and not user.is_staff:
                 choices = list(qf.choices)
-                choices.remove(('internal', _('Internal')))
+                choices.remove(("internal", _("Internal")))
                 qf.choices = choices
 
             # a bit of a hack...
             # hide a field, and use clean to force
             # a specific value of ours
-            for key in ['user']:
+            for key in ["user"]:
                 qf = self.fields.get(key, None)
                 if qf:
                     qf.widget = qf.hidden_widget()
@@ -77,25 +77,24 @@ def ResponseForm(user, question, *args, **kwargs):
     if question.locked:
         return None
 
-    if not settings.FREE_RESPONSE and not \
-            (user.is_staff or question.user == user):
+    if not settings.FREE_RESPONSE and not (user.is_staff or question.user == user):
         return None
 
     if user.is_anonymous:
         if not settings.ALLOW_ANONYMOUS:
             return None
         else:
-            selected_fields = ['name', 'email']
+            selected_fields = ["name", "email"]
     else:
-        selected_fields = ['user']
+        selected_fields = ["user"]
 
-    selected_fields += ['body', 'question']
+    selected_fields += ["body", "question"]
 
     if user.is_staff:
-        selected_fields += ['status']
+        selected_fields += ["status"]
 
     if settings.ALERTS:
-        selected_fields += ['alert']
+        selected_fields += ["alert"]
 
     class _ResponseForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
@@ -106,7 +105,7 @@ def ResponseForm(user, question, *args, **kwargs):
                     self.fields[key].required = True
 
             # a bit of a hack...
-            for key in ['user', 'question']:
+            for key in ["user", "question"]:
                 qf = self.fields.get(key, None)
                 if qf:
                     qf.widget = qf.hidden_widget()
