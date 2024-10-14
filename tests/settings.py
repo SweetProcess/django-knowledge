@@ -4,10 +4,12 @@ DIRNAME = os.path.dirname(__file__)
 
 DEBUG = True
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 DATABASE_ENGINE = 'sqlite3'
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', 
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(DIRNAME, 'example.sqlite').replace('\\','/'),
         'USER': '',
         'PASSWORD': '',
@@ -29,7 +31,6 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -38,9 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.sites',
-
+    "django.contrib.messages",
     'django_markdown',
-    'debug_toolbar',
     'knowledge',
     'django_coverage',
     'mock',
@@ -57,9 +57,14 @@ TEMPLATES = [
         ),
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
-        'OPTIONS': {'context_processors': [
-            'django.contrib.auth.context_processors.auth'
-        ]},
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
     },
 ]
 

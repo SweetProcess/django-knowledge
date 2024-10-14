@@ -1,6 +1,5 @@
 from knowledge import settings
 
-import django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings as django_settings

@@ -1,9 +1,4 @@
-Django>=2.1.0
-django-markdown-app==0.9.4.1
+Django>=4.0.0
+-e git+ssh://git@github.com/SweetProcess/django-markdown-app@e10a2c846a0ee0e6da2b2ecd6d09c83c396002e3#egg=django-markdown-app
 Markdown==2.6.11
 Sphinx==1.7.6
-coverage==4.5.1
-django-coverage==1.2.4
-django-debug-toolbar==1.9.1
-pep8==1.7.1
-pylint==2.1.1
