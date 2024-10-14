@@ -13,63 +13,62 @@ class BasicViewTest(TestCase):
     def test_index(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_index'))
+        r = c.get(reverse("knowledge_index"))
         self.assertEqual(r.status_code, 200)
-
 
     def test_list(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_list'))
+        r = c.get(reverse("knowledge_list"))
         self.assertEqual(r.status_code, 200)
-
 
     def test_list_category(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_list_category', args=['notreal']))
+        r = c.get(reverse("knowledge_list_category", args=["notreal"]))
         self.assertEqual(r.status_code, 404)
 
-        category = Category.objects.create(title='Hello!', slug='hello')
+        category = Category.objects.create(title="Hello!", slug="hello")
 
-        r = c.get(reverse('knowledge_list_category', args=['hello']))
+        r = c.get(reverse("knowledge_list_category", args=["hello"]))
         self.assertEqual(r.status_code, 200)
-
 
     def test_list_search(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_list') + '?title=hello!')
+        r = c.get(reverse("knowledge_list") + "?title=hello!")
         self.assertEqual(r.status_code, 200)
-
 
     def test_thread(self):
         c = Client()
 
-        question_url = reverse('knowledge_thread', args=[self.question.id, slugify(self.question.title)])
+        question_url = reverse(
+            "knowledge_thread", args=[self.question.id, slugify(self.question.title)]
+        )
 
-        r = c.get(reverse('knowledge_thread', args=[123456, 'a-big-long-slug']))
+        r = c.get(reverse("knowledge_thread", args=[123456, "a-big-long-slug"]))
         self.assertEqual(r.status_code, 404)
 
         # this is private by default
-        r = c.get(reverse('knowledge_thread', args=[self.question.id, 'a-big-long-slug']))
+        r = c.get(
+            reverse("knowledge_thread", args=[self.question.id, "a-big-long-slug"])
+        )
         self.assertEqual(r.status_code, 404)
-    
+
         r = c.get(question_url)
         self.assertEqual(r.status_code, 404)
 
-        c.login(username='joe', password='secret')
+        c.login(username="joe", password="secret")
 
-        r = c.get(reverse('knowledge_thread', args=[self.question.id, 'a-big-long-slug']))
+        r = c.get(
+            reverse("knowledge_thread", args=[self.question.id, "a-big-long-slug"])
+        )
         self.assertEqual(r.status_code, 301)
 
         r = c.get(question_url)
         self.assertEqual(r.status_code, 200)
 
-
-        RESPONSE_POST = {
-            'body': 'This is the response body friend!'
-        }
+        RESPONSE_POST = {"body": "This is the response body friend!"}
 
         r = c.post(question_url, RESPONSE_POST)
         self.assertEqual(r.status_code, 302)
@@ -79,7 +78,7 @@ class BasicViewTest(TestCase):
 
         # lets make it public...
         self.question.public()
-    
+
         r = c.get(question_url)
         self.assertEqual(r.status_code, 200)
 
@@ -87,66 +86,85 @@ class BasicViewTest(TestCase):
         r = c.post(question_url, RESPONSE_POST)
         self.assertEqual(r.status_code, 200)
 
-
     def test_moderate(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_moderate', args=['question', self.question.id, 'public']))
+        r = c.get(
+            reverse("knowledge_moderate", args=["question", self.question.id, "public"])
+        )
         self.assertEqual(r.status_code, 404)
 
-        r = c.post(reverse('knowledge_moderate', args=['question', self.question.id, 'public']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["question", self.question.id, "public"])
+        )
         self.assertEqual(r.status_code, 404)
 
-        r = c.post(reverse('knowledge_moderate', args=['response', self.response.id, 'public']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["response", self.response.id, "public"])
+        )
         self.assertEqual(r.status_code, 404)
 
+        c.login(username="admin", password="secret")
 
-        c.login(username='admin', password='secret')
-
-        r = c.post(reverse('knowledge_moderate', args=['question', self.question.id, 'notreal']))
+        r = c.post(
+            reverse(
+                "knowledge_moderate", args=["question", self.question.id, "notreal"]
+            )
+        )
         self.assertEqual(r.status_code, 404)
 
         # nice try buddy!
-        r = c.post(reverse('knowledge_moderate', args=['user', self.admin.id, 'delete']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["user", self.admin.id, "delete"])
+        )
         self.assertEqual(r.status_code, 404)
 
         # GET does not work
-        r = c.get(reverse('knowledge_moderate', args=['question', self.question.id, 'public']))
+        r = c.get(
+            reverse("knowledge_moderate", args=["question", self.question.id, "public"])
+        )
         self.assertEqual(r.status_code, 404)
 
-        self.assertEqual(Question.objects.get(id=self.question.id).status, 'private')
-        r = c.post(reverse('knowledge_moderate', args=['question', self.question.id, 'public']))
+        self.assertEqual(Question.objects.get(id=self.question.id).status, "private")
+        r = c.post(
+            reverse("knowledge_moderate", args=["question", self.question.id, "public"])
+        )
         self.assertEqual(r.status_code, 302)
-        self.assertEqual(Question.objects.get(id=self.question.id).status, 'public')
+        self.assertEqual(Question.objects.get(id=self.question.id).status, "public")
 
-        r = c.post(reverse('knowledge_moderate', args=['response', self.response.id, 'public']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["response", self.response.id, "public"])
+        )
         self.assertEqual(r.status_code, 302)
 
-        r = c.post(reverse('knowledge_moderate', args=['question', self.question.id, 'delete']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["question", self.question.id, "delete"])
+        )
         self.assertEqual(r.status_code, 302)
 
-        r = c.post(reverse('knowledge_moderate', args=['question', self.question.id, 'delete']))
+        r = c.post(
+            reverse("knowledge_moderate", args=["question", self.question.id, "delete"])
+        )
         self.assertEqual(r.status_code, 404)
-
 
     def test_ask(self):
         c = Client()
 
-        r = c.get(reverse('knowledge_ask'))
+        r = c.get(reverse("knowledge_ask"))
         self.assertEqual(r.status_code, 200)
 
         QUESTION_POST = {
-            'title': 'This is a title friend!',
-            'body': 'This is the body friend!',
-            'status': 'private'
+            "title": "This is a title friend!",
+            "body": "This is the body friend!",
+            "status": "private",
         }
 
         # invalid question POSTs are basically ignored...
-        r = c.post(reverse('knowledge_ask'), QUESTION_POST)
+        r = c.post(reverse("knowledge_ask"), QUESTION_POST)
         self.assertEqual(r.status_code, 200)
 
-        c.login(username='joe', password='secret')
+        c.login(username="joe", password="secret")
 
         # ...unless you are a user with permission to ask
-        r = c.post(reverse('knowledge_ask'), QUESTION_POST)
+        r = c.post(reverse("knowledge_ask"), QUESTION_POST)
         self.assertEqual(r.status_code, 302)

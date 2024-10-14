@@ -14,48 +14,35 @@ class BasicSettingsTest(TestCase):
     def test_ALLOW_ANONYMOUS(self):
         self.assertFalse(settings.ALLOW_ANONYMOUS)
 
-        self.assertEqual(
-            None,
-            QuestionForm(self.anon)
-        )
+        self.assertEqual(None, QuestionForm(self.anon))
 
-        self.assertEqual(
-            None,
-            ResponseForm(self.anon, self.question)
-        )
+        self.assertEqual(None, ResponseForm(self.anon, self.question))
 
         ############# flip setting ##############
         settings.ALLOW_ANONYMOUS = not settings.ALLOW_ANONYMOUS
         ############# flip setting ##############
 
-        self.assertNotEqual(
-            None,
-            QuestionForm(self.anon)
-        )
+        self.assertNotEqual(None, QuestionForm(self.anon))
 
-        self.assertNotEqual(
-            None,
-            ResponseForm(self.anon, self.question)
-        )
+        self.assertNotEqual(None, ResponseForm(self.anon, self.question))
 
         form = QuestionForm(self.anon)
-        self.assertNotIn('status', list(form.fields.keys()))
+        self.assertNotIn("status", list(form.fields.keys()))
 
         # missing the name/email...
         QUESTION_POST = {
-            'title': 'This is a title friend!',
-            'body': 'This is the body friend!'
+            "title": "This is a title friend!",
+            "body": "This is the body friend!",
         }
 
         form = QuestionForm(self.anon, QUESTION_POST)
         self.assertFalse(form.is_valid())
 
-
         QUESTION_POST = {
-            'name': 'Test Guy',
-            'email': 'anonymous@example.com',
-            'title': 'This is a title friend!',
-            'body': 'This is the body friend!'
+            "name": "Test Guy",
+            "email": "anonymous@example.com",
+            "title": "This is a title friend!",
+            "body": "This is the body friend!",
         }
 
         form = QuestionForm(self.anon, QUESTION_POST)
@@ -65,39 +52,36 @@ class BasicSettingsTest(TestCase):
 
         # question has no user and is public by default
         self.assertFalse(question.user)
-        self.assertEqual(question.name, 'Test Guy')
-        self.assertEqual(question.email, 'anonymous@example.com')
-        self.assertEqual(question.status, 'public')
+        self.assertEqual(question.name, "Test Guy")
+        self.assertEqual(question.email, "anonymous@example.com")
+        self.assertEqual(question.status, "public")
 
         ############# flip setting ##############
         settings.ALLOW_ANONYMOUS = not settings.ALLOW_ANONYMOUS
         ############# flip setting ##############
 
-
     def test_AUTO_PUBLICIZE(self):
         self.assertFalse(settings.AUTO_PUBLICIZE)
 
         QUESTION_POST = {
-            'title': 'This is a title friend!',
-            'body': 'This is the body friend!',
-            'status': 'private'
+            "title": "This is a title friend!",
+            "body": "This is the body friend!",
+            "status": "private",
         }
 
         question = QuestionForm(self.joe, QUESTION_POST).save()
-        self.assertEqual(question.status, 'private')
+        self.assertEqual(question.status, "private")
 
         ############# flip setting ##############
         settings.AUTO_PUBLICIZE = not settings.AUTO_PUBLICIZE
         ############# flip setting ##############
 
         question = QuestionForm(self.joe, QUESTION_POST).save()
-        self.assertEqual(question.status, 'public')
-
+        self.assertEqual(question.status, "public")
 
         ############# flip setting ##############
         settings.AUTO_PUBLICIZE = not settings.AUTO_PUBLICIZE
         ############# flip setting ##############
-
 
     def test_FREE_RESPONSE(self):
         self.assertTrue(settings.FREE_RESPONSE)
@@ -122,7 +106,6 @@ class BasicSettingsTest(TestCase):
         settings.FREE_RESPONSE = not settings.FREE_RESPONSE
         ############# flip setting ##############
 
-
     def test_SLUG_URLS(self):
         self.assertTrue(settings.SLUG_URLS)
 
@@ -130,9 +113,13 @@ class BasicSettingsTest(TestCase):
 
         self.question.public()
 
-        question_url = reverse('knowledge_thread', args=[self.question.id, slugify(self.question.title)])
+        question_url = reverse(
+            "knowledge_thread", args=[self.question.id, slugify(self.question.title)]
+        )
 
-        r = c.get(reverse('knowledge_thread', args=[self.question.id, 'a-big-long-slug']))
+        r = c.get(
+            reverse("knowledge_thread", args=[self.question.id, "a-big-long-slug"])
+        )
         self.assertEqual(r.status_code, 301)
 
         r = c.get(question_url)
@@ -142,13 +129,15 @@ class BasicSettingsTest(TestCase):
         settings.SLUG_URLS = not settings.SLUG_URLS
         ############# flip setting ##############
 
-        r = c.get(reverse('knowledge_thread', args=[self.question.id, 'a-big-long-slug']))
+        r = c.get(
+            reverse("knowledge_thread", args=[self.question.id, "a-big-long-slug"])
+        )
         self.assertEqual(r.status_code, 301)
 
         r = c.get(question_url)
         self.assertEqual(r.status_code, 301)
 
-        r = c.get(reverse('knowledge_thread_no_slug', args=[self.question.id]))
+        r = c.get(reverse("knowledge_thread_no_slug", args=[self.question.id]))
         self.assertEqual(r.status_code, 200)
 
         ############# flip setting ##############
